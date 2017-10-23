@@ -4,38 +4,47 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour 
 {
-	int currentWaveCount;
-	int maxWaveCount;
+	int currentWaveCount = 0;
+	public int maxWaveCount = 3;
 
 	int numberToSpawn;
 
-	int spawnedEnemiesLeft = 0; // The update method will track this number to determine if a new wave needs to be spawned
+	public GameObject spawnPoint;
+	public GameObject npcPrefab;
+
+	public float timeBetweenSpawn = 0.07f;
+	bool canSpawn = true;
+
+	public int spawnedEnemiesLeft = 0; // The update method will track this number to determine if a new wave needs to be spawned
 
 	void Start () 
 	{
-		//implement waveOne
+
 	}
 		
 	void Update ()
 	{
 		if (spawnedEnemiesLeft <= 0) //check if all mobs are dead, if so call NextWave(); which will spawn the next wave
 		{
-			
+			currentWaveCount += 1;//Increment waves
+			NextWave ();
 		}
 	}
 
 	void NextWave()
 	{
-		numberToSpawn = currentWaveCount * 10; //random formula to figure out how many mobs you want to spawn per wave (wave number * 10)
+		numberToSpawn = currentWaveCount * 10; //Formula to figure out how many mobs you want to spawn per wave (wave number * 10)
 		spawnedEnemiesLeft = numberToSpawn; //set to the number of enemies we are spawning
-		SpawnMobs ();//loop mob spawns
+		StartCoroutine(SpawnMobs ());//loop mob spawns
 	}
-
-	void SpawnMobs ()
+		
+	IEnumerator SpawnMobs ()
 	{
-		for(int i = 1; i < numberToSpawn; i++)
+		for(int i = 0; i < numberToSpawn ; i++)
 		{
-			//instantiate a monster on the spawn point, this monster will have a health script and a pathfinding script attached
+			yield return new WaitForSeconds (timeBetweenSpawn);//wait 1 second between each spawn
+			Instantiate (npcPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
+
 		}
 	}
 }
